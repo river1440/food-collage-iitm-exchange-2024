@@ -6,6 +6,12 @@
     <title>Food Collage - IITM Exchange 2023 - 2024</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <script src="
+    https://cdn.jsdelivr.net/npm/vue-multiselect@3.2.0/dist/vue-multiselect.min.js
+    "></script>
+    <link href="
+    https://cdn.jsdelivr.net/npm/vue-multiselect@3.2.0/dist/vue-multiselect.min.css
+    " rel="stylesheet">
 </head>
 <body class="bg-gray-100 text-gray-800">
     <div id="app" class="max-w-5xl mx-auto p-4">
@@ -22,40 +28,75 @@
         <!-- Filters -->
         <div class="flex flex-wrap justify-between items-center gap-2 mb-4">
             <!-- Left: Select filters -->
-            <div class="flex flex-wrap items-center gap-2">
-                <select v-model="selectedMeal" class="p-2 border rounded">
-                    <option value="">All Meals</option>
-                    <option v-for="m in meals" :key="m" :value="m">{{ m }}</option>
-                </select>
+            <div class="flex flex-col gap-4 max-w-full">
+                <div class="flex items-center gap-2">
+                    <label class="min-w-[120px] font-semibold" for="meals">Meals</label>
+                    <multiselect
+                    id="meals"
+                    v-model="selectedMeals"
+                    :options="meals"
+                    :multiple="true"
+                    placeholder="Select meals"
+                    class="inline-block min-w-[200px]"
+                >
+                <template #option="{ option }">
+                    <span>
+                        <input type="checkbox" :checked="selectedMeals.includes(option)" disabled class="mr-2" />
+                        {{ option }}
+                    </span>
+                </template>
+                </multiselect>
+                </div>
 
-                <select v-model="selectedCategory" class="p-2 border rounded">
-                    <option value="">All Categories</option>
-                    <option v-for="c in categories" :key="c" :value="c">{{ c }}</option>
-                </select>
+                <div class="flex items-center gap-2">
+                    <label class="min-w-[120px] font-semibold" for="categories">Categories</label>
+                    <multiselect
+                    id="categories"
+                    v-model="selectedCategories"
+                    :options="categories"
+                    :multiple="true"
+                    placeholder="Select categories"
+                    class="inline-block min-w-[200px]"
+                    />
+                </div>
 
-                <select v-model="selectedWeekday" class="p-2 border rounded">
-                    <option value="">All Weekdays</option>
-                    <option v-for="w in weekdays" :key="w" :value="w">{{ w }}</option>
-                </select>
+                <div class="flex items-center gap-2">
+                    <label class="min-w-[120px] font-semibold" for="weekdays">Weekdays</label>
+                    <multiselect
+                    id="weekdays"
+                    v-model="selectedWeekdays"
+                    :options="weekdays"
+                    :multiple="true"
+                    placeholder="Select weekdays"
+                    class="inline-block min-w-[200px]"
+                    />
+                </div>
 
-                <select v-model="selectedMonth" class="p-2 border rounded">
-                    <option value="">All Month</option>
-                    <option v-for="o in months" :key="o" :value="o">{{ o }}</option>
-                </select>
-
+                <div class="flex items-center gap-2">
+                    <label class="min-w-[120px] font-semibold" for="months">Months</label>
+                    <multiselect
+                    id="months"
+                    v-model="selectedMonths"
+                    :options="months"
+                    :multiple="true"
+                    placeholder="Select months"
+                    class="inline-block min-w-[200px]"
+                    />
+                </div>
+            <div class="flex justify-between items-center gap-2 mb-4">
                 <label class="ml-4 flex items-center space-x-2 text-gray-700">
                     <input type="checkbox" v-model="onlyWithMemo" />
                     <span>Only with memo (special event)</span>
                 </label>
+                <!-- Right: Reset Button -->
+                <button
+                    @click="resetFilters"
+                    class="px-4 py-2 border-gray-600 border-2 rounded-lg hover:bg-gray-600 hover:text-white transition duration-100"
+                >
+                    Reset
+                </button>
             </div>
-
-            <!-- Right: Reset Button -->
-            <button
-                @click="resetFilters"
-                class="px-4 py-2 border-gray-600 border-2 rounded-lg hover:bg-gray-600 hover:text-white transition duration-100"
-            >
-                Reset
-            </button>
+            </div>
         </div>
 
 
@@ -130,135 +171,149 @@
             <p class="mt-1">&copy; 2025 river1440. All rights reserved.</p>
         </footer>
     </div>
-</body>
-<script type="module">
-import { createApp, ref, computed, onMounted } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+    <script>
+        const { createApp, ref, computed, onMounted } = Vue
 
-createApp({
-setup() {
-    const photos = ref([]);
+        const app = createApp({
+            setup() {
+                const photos = ref([]);
 
-    // Filter
-    const selectedMeal = ref("");
-    const selectedCategory = ref("");
-    const selectedWeekday = ref("");
-    const selectedMonth = ref("");
-    const onlyWithMemo = ref(false);
-    const highResLoaded = ref(false);
+                // Filter
+                const selectedMeals = ref([]);
+                const selectedCategories = ref([]);
+                const selectedWeekdays = ref([]);
+                const selectedMonths = ref([]);
+                const onlyWithMemo = ref(false);
+                const highResLoaded = ref(false);
 
-    // Modal
-    const selectedPhoto = ref(null);    
+                // Modal
+                const selectedPhoto = ref(null);    
 
-    const meals = computed(() => {
-    return [...new Set(photos.value.map(p => p.meal))];
-    });
+                const meals = computed(() => {
+                return [...new Set(photos.value.map(p => p.meal))];
+                });
 
-    const categories = computed(() => {
-    return [...new Set(photos.value.map(p => p.category))];
-    });
+                const categories = computed(() => {
+                return [...new Set(photos.value.map(p => p.category))];
+                });
 
-    const weekdays = computed(() => {
-    return [...new Set(photos.value.map(p => p.weekday))];
-    });
+                const weekdays = computed(() => {
+                return [...new Set(photos.value.map(p => p.weekday))];
+                });
 
-    const months = computed(() => {
-    return [...new Set(photos.value.map(p => p.month))];
-    });
+                const months = computed(() => {
+                return [...new Set(photos.value.map(p => p.month))];
+                });
 
-    const filteredPhotos = computed(() => {
-        return photos.value.filter(p => {
-            const mealMatch = !selectedMeal.value || p.meal === selectedMeal.value;
-            const categoryMatch = !selectedCategory.value || p.category === selectedCategory.value
-            const weekdayMatch = !selectedWeekday.value || p.weekday === selectedWeekday.value
-            const monthMatch = !selectedMonth.value || p.month === selectedMonth.value
-            const memoMatch = !onlyWithMemo.value || (p.memo && p.memo.trim() !== "")
-            
-            return mealMatch && categoryMatch && weekdayMatch && monthMatch && memoMatch;
+                const filteredPhotos = computed(() => {
+                    if (
+                            selectedCategories.value.length === 0 ||
+                            selectedMeals.value.length === 0 ||
+                            selectedWeekdays.value.length === 0 ||
+                            selectedMonths.value.length === 0
+                        ) {
+                            return []; // no results if any filter empty
+                        }
+
+                    return photos.value.filter(p => {
+                        const mealMatch = selectedMeals.value.includes(p.meal);
+                        const categoryMatch = selectedCategories.value.includes(p.category);
+                        const weekdayMatch = selectedWeekdays.value.includes(p.weekday);
+                        const monthMatch = selectedMonths.value.includes(p.month);
+                        const memoMatch = !onlyWithMemo.value || (p.memo && p.memo.trim() !== "")
+                        
+                        return mealMatch && categoryMatch && weekdayMatch && monthMatch && memoMatch;
+                    });
+                });
+
+                // Layout
+                const columnCount = computed(() => {
+                    const n = Math.ceil(Math.sqrt(filteredPhotos.value.length || 1));
+                    return Math.max(n, 4); // at least 4 columns
+                });
+
+                // Less gap when more columns
+                const gapClass = computed(() => {
+                    if (columnCount.value <= 8) return 'gap-4';
+                    if (columnCount.value <= 16) return 'gap-2';
+                    return 'gap-1';
+                });
+
+                const roundClass = computed(() => {
+                    if (columnCount.value <= 8) return 'rounded-2xl';
+                    if (columnCount.value <= 16) return 'rounded-lg';
+                    return 'rounded-md';
+                });
+
+                const imageSize = computed(() => {
+                    return columnCount.value <= 12 ? 'medium' : 'small';
+                });
+
+                const showPhoto = (photo) => {
+                    selectedPhoto.value = photo;
+
+                    // Ensure reloading photo
+                    highResLoaded.value = false
+                };
+
+                const resetFilters = () => {
+                    selectedCategories.value = [...categories.value];
+                    selectedMeals.value = [...meals.value];
+                    selectedWeekdays.value = [...weekdays.value];
+                    selectedMonths.value = [...months.value];
+                    onlyWithMemo.value = false;
+                };
+
+                function formatDate(timestamp) {
+                    const options = {
+                        weekday: "short",
+                        year: "numeric",
+                        month: "short",
+                        day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                        hour12: false
+                    }
+                    return new Date(timestamp).toLocaleDateString("en-US", options).replace(/,/g, '');
+                }
+
+                onMounted(async () => {
+                    const res = await fetch('photo_metadata.json');
+                    photos.value = await res.json();
+                    selectedCategories.value = [...categories.value];
+                    selectedMeals.value = [...meals.value];
+                    selectedWeekdays.value = [...weekdays.value];
+                    selectedMonths.value = [...months.value];
+                });
+
+                return {
+                    photos,
+                    highResLoaded,
+                    onlyWithMemo,
+                    selectedMeals,
+                    selectedCategories,
+                    selectedWeekdays,
+                    selectedMonths,
+                    selectedPhoto,
+                    meals,
+                    categories,
+                    weekdays,
+                    months,
+                    filteredPhotos,
+                    columnCount,
+                    gapClass,
+                    roundClass,
+                    imageSize,
+                    showPhoto,
+                    resetFilters,
+                    formatDate,
+                };
+            }
         });
-    });
 
-    // Layout
-    const columnCount = computed(() => {
-        const n = Math.ceil(Math.sqrt(filteredPhotos.value.length || 1));
-        return Math.max(n, 4); // at least 4 columns
-    });
-
-    // Less gap when more columns
-    const gapClass = computed(() => {
-        if (columnCount.value <= 8) return 'gap-4';
-        if (columnCount.value <= 16) return 'gap-2';
-        return 'gap-1';
-    });
-
-    const roundClass = computed(() => {
-        if (columnCount.value <= 8) return 'rounded-2xl';
-        if (columnCount.value <= 16) return 'rounded-lg';
-        return 'rounded-md';
-    });
-
-    const imageSize = computed(() => {
-        return columnCount.value <= 12 ? 'medium' : 'small';
-    });
-
-    const showPhoto = (photo) => {
-        selectedPhoto.value = photo;
-
-        // Ensure reloading photo
-        highResLoaded.value = false
-    };
-
-    const resetFilters = () => {
-        selectedMeal.value = '';
-        selectedCategory.value = '';
-        selectedWeekday.value = '';
-        selectedMonth.value = '';
-        onlyWithMemo.value = false;
-    };
-
-    function formatDate(timestamp) {
-        const options = {
-            weekday: "short",
-            year: "numeric",
-            month: "short",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hour12: false
-        }
-        return new Date(timestamp).toLocaleDateString("en-US", options).replace(/,/g, '');
-    }
-
-    onMounted(async () => {
-        const res = await fetch('photo_metadata.json');
-        photos.value = await res.json();
-    });
-
-
-
-    return {
-        photos,
-        highResLoaded,
-        onlyWithMemo,
-        selectedMeal,
-        selectedCategory,
-        selectedWeekday,
-        selectedMonth,
-        selectedPhoto,
-        meals,
-        categories,
-        weekdays,
-        months,
-        filteredPhotos,
-        columnCount,
-        gapClass,
-        roundClass,
-        imageSize,
-        showPhoto,
-        resetFilters,
-        formatDate,
-    };
-}
-}).mount('#app');
-</script>
+        app.component('multiselect', VueMultiselect.Multiselect);
+        app.mount('#app');
+    </script>
+</body>
 </html>
