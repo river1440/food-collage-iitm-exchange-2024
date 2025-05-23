@@ -1,0 +1,51 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>PrimeVue + CDN</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+  </head>
+  <body>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/primevue/umd/primevue.min.js"></script>
+    <script src="https://unpkg.com/@primeuix/themes/umd/aura.js"></script>
+
+    <div id="app">
+      <div class="card flex justify-center">
+          <p-multiselect v-model="selectedCities" :options="cities" optionLabel="name" filter placeholder="Select Cities"
+              :maxSelectedLabels="3" class="w-full md:w-80" />
+      </div>
+    </div>
+
+    <script>
+      const { createApp, ref } = Vue;
+
+      const app = createApp({
+        setup() {
+        const selectedCities = ref([]);
+        const cities = ref([
+          { name: 'New York', code: 'NY' },
+          { name: 'Rome', code: 'RM' },
+          { name: 'London', code: 'LDN' },
+          { name: 'Istanbul', code: 'IST' },
+          { name: 'Paris', code: 'PRS' }
+        ]);
+
+        return { selectedCities, cities };
+        },
+      });
+
+      app.use(PrimeVue.Config, {
+        theme: {
+            preset: PrimeUIX.Themes.Aura
+        }
+      });
+
+      app.component('p-multiselect', PrimeVue.MultiSelect);
+      console.log(PrimeVue.MultiSelect)
+
+      app.mount('#app');
+    </script>
+  </body>
+</html>
