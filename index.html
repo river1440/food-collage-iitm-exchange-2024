@@ -99,10 +99,24 @@
                 >
                     &times;
                 </button>
+                <div class="relative">
+  <!-- Low-quality image as fallback or blur -->
                 <img
+                    :src="'photos/medium/' + selectedPhoto.filename"
+                    class="absolute w-full max-h-[80vh] object-contain mb-4 rounded-xl blur-sm"
+                />
+                <!-- High-quality image loaded lazily -->
+                <img
+                    :src="'photos/large/' + selectedPhoto.filename"
+                    class="relative w-full max-h-[80vh] object-contain mb-4 rounded-xl transition-opacity duration-300"
+                    @load="highResLoaded = true"
+                    :class="{ 'opacity-0': !highResLoaded, 'opacity-100': highResLoaded }"
+                />
+                </div>
+                <!-- <img
                 class="w-full max-h-[80vh] object-contain mb-4 rounded-xl"
                 :src="'photos/large/' + selectedPhoto.filename"
-                />
+                /> -->
                 <div class="text-center">
                     <p class="text-lg font-medium mb-2">{{ selectedPhoto.memo }}</p>
                     <p class="text-sm text-gray-600 mb-1">{{ selectedPhoto.meal }} | {{ selectedPhoto.category }}</p>
@@ -134,6 +148,7 @@ setup() {
     const selectedWeekday = ref("");
     const selectedMonth = ref("");
     const onlyWithMemo = ref(false);
+    const highResLoaded = ref(false);
 
     // Modal
     const selectedPhoto = ref(null);    
@@ -190,7 +205,10 @@ setup() {
     });
 
     const showPhoto = (photo) => {
-    selectedPhoto.value = photo;
+        selectedPhoto.value = photo;
+
+        // Ensure reloading photo
+        highResLoaded.value = false
     };
 
     const resetFilters = () => {
@@ -216,14 +234,15 @@ setup() {
     }
 
     onMounted(async () => {
-    const res = await fetch('photo_metadata.json');
-    photos.value = await res.json();
+        const res = await fetch('photo_metadata.json');
+        photos.value = await res.json();
     });
 
 
 
     return {
         photos,
+        highResLoaded,
         onlyWithMemo,
         selectedMeal,
         selectedCategory,
