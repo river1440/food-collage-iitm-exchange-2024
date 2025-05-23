@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Food Collage - IITM Exchange 2023 - 2024</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <div id="app" class="max-w-5xl mx-auto p-4">
+        <!-- Filters -->
+        <div class="mb-4 flex flex-wrap gap-4">
+        <select v-model="selectedMeal" class="p-2 border rounded">
+            <option value="">All Meals</option>
+            <option v-for="m in meals" :key="m" :value="m">{{ m }}</option>
+        </select>
+
+        <select v-model="selectedCategory" class="p-2 border rounded">
+            <option value="">All Categories</option>
+            <option v-for="c in categories" :key="c" :value="c">{{ c }}</option>
+        </select>
+        </div>
+
+        <!-- Gallery -->
+        <!-- <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            <div
+                v-for="item in filteredPhotos"
+                :key="item.filename"
+                @click="showPhoto(item)"
+                class="cursor-pointer rounded overflow-hidden shadow hover:shadow-lg transition"
+            >
+                <img
+                class="object-cover w-full h-48"
+                :src="'photos/' + item.filename"
+                :alt="item.memo"
+                />
+            </div>
+        </div> -->
+        <div
+        class="grid gap-0"
+        :style="`grid-template-columns: repeat(${columnCount}, minmax(0, 1fr));`"
+        >
+            <div
+                class="aspect-square overflow-hidden cursor-pointer"
+                v-for="item in filteredPhotos"
+                :key="item.filename"
+                @click="showPhoto(item)"
+            >
+                <img
+                class="w-full h-full object-cover transition-transform duration-200 hover:scale-105"
+                :src="'photos/' + item.filename"
+                :alt="item.memo"
+                />
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div
+        v-if="selectedPhoto"
+        class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
+        @click.self="selectedPhoto = null"
+        >
+            <div class="bg-white rounded p-4 max-w-screen-sm w-full">
+                <img
+                class="w-full max-h-[80vh] object-contain mb-4"
+                :src="'photos/' + selectedPhoto.filename"
+                />
+                <div class="text-center">
+                    <p class="text-lg font-medium mb-2">{{ selectedPhoto.memo }}</p>
+                    <p class="text-sm text-gray-600">{{ selectedPhoto.meal }} | {{ selectedPhoto.category }}</p>
+                </div>
+                <div  class="text-center">
+                    <p class="text-sm text-gray-600">Photo at {{ selectedPhoto.created_at }}</p>
+                </div>
+            </div>
+        </div>  
+    </div>
+
+    <script type="module">
+    import { createApp, ref, computed, onMounted } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+
+    createApp({
+    setup() {
+        const photos = ref([]);
+        const selectedMeal = ref("");
+        const selectedCategory = ref("");
+        const selectedPhoto = ref(null);
+
+        const columnCount = computed(() => {
+            const n = Math.ceil(Math.sqrt(filteredPhotos.value.length || 1));
+            return Math.max(n, 4); // at least 4 columns
+        });
+
+        const meals = computed(() => {
+        return [...new Set(photos.value.map(p => p.meal))];
+        });
+
+        const categories = computed(() => {
+        return [...new Set(photos.value.map(p => p.category))];
+        });
+
+        const filteredPhotos = computed(() => {
+        return photos.value.filter(p => {
+            return (!selectedMeal.value || p.meal === selectedMeal.value) &&
+                (!selectedCategory.value || p.category === selectedCategory.value);
+        });
+        });
+
+        const showPhoto = (photo) => {
+        selectedPhoto.value = photo;
+        };
+
+        onMounted(async () => {
+        const res = await fetch('photo_metadata.json');
+        photos.value = await res.json();
+        });
+
+        return {
+        photos,
+        selectedMeal,
+        selectedCategory,
+        selectedPhoto,
+        meals,
+        categories,
+        filteredPhotos,
+        columnCount,
+        showPhoto
+        };
+    }
+    }).mount('#app');
+    </script>
+</body>
+</html>
