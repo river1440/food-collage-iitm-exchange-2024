@@ -102,7 +102,7 @@
                 <div class="relative">
   <!-- Low-quality image as fallback or blur -->
                 <img
-                    :src="'photos/medium/' + selectedPhoto.filename"
+                    :src="'photos/small/' + selectedPhoto.filename"
                     class="absolute w-full max-h-[80vh] object-contain mb-4 rounded-xl blur-sm"
                 />
                 <!-- High-quality image loaded lazily -->
@@ -113,10 +113,6 @@
                     :class="{ 'opacity-0': !highResLoaded, 'opacity-100': highResLoaded }"
                 />
                 </div>
-                <!-- <img
-                class="w-full max-h-[80vh] object-contain mb-4 rounded-xl"
-                :src="'photos/large/' + selectedPhoto.filename"
-                /> -->
                 <div class="text-center">
                     <p class="text-lg font-medium mb-2">{{ selectedPhoto.memo }}</p>
                     <p class="text-sm text-gray-600 mb-1">{{ selectedPhoto.meal }} | {{ selectedPhoto.category }}</p>
