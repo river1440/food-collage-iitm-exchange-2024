@@ -25,7 +25,7 @@
         <!-- Filters -->
         <div class="flex flex-wrap justify-between items-center gap-2 mb-4">
             <!-- Left: Select filters -->
-            <div class="flex flex-col gap-4 max-w-full">
+            <div class="flex flex-col gap-4 w-full">
                 <div class="flex items-center gap-2">
                     <label class="min-w-[120px] font-semibold" for="meals">Meals</label>
                     <multiselect
@@ -34,7 +34,7 @@
                         :options="meals"
                         filter
                         placeholder="Select meals"
-                        class="inline-block min-w-[200px]" />
+                        class="w-full"/>
                 </div>
 
                 <div class="flex items-center gap-2">
@@ -45,7 +45,7 @@
                         :options="categories"
                         filter
                         placeholder="Select categories"
-                        class="inline-block min-w-[200px]"
+                        class="w-full"
                     />
                 </div>
 
@@ -57,7 +57,7 @@
                         :options="weekdays"
                         filter
                         placeholder="Select weekdays"
-                        class="inline-block min-w-[200px]"
+                        class="w-full"
                     />
                 </div>
 
@@ -70,22 +70,27 @@
                         optionLabel="name"
                         filter
                         placeholder="Select months"
-                        class="inline-block min-w-[200px]"
+                        class="w-full"
                     />
                 </div>
-            <div class="flex justify-between items-center gap-2 mb-4">
-                <label class="ml-4 flex items-center space-x-2 text-gray-700">
-                    <input type="checkbox" v-model="onlyWithMemo" />
-                    <span>Only with memo (special event)</span>
-                </label>
-                <!-- Right: Reset Button -->
-                <button
-                    @click="resetFilters"
-                    class="px-4 py-2 border-gray-600 border-2 rounded-lg hover:bg-gray-600 hover:text-white transition duration-100"
-                >
-                    Reset
-                </button>
-            </div>
+
+                <div class="flex justify-between items-center gap-2 mb-4">
+                    <div class="flex gap-2 items-center">
+                        <div class="flex items-center">
+                            <p-checkbox v-model="onlyWithMemo" binary/>
+                        </div>
+                        <div class="font-semibold">
+                            Only with memo (special event)
+                        </div>
+                    </div>
+                    <!-- Right: Reset Button -->
+                    <button
+                        @click="resetFilters"
+                        class="px-4 py-2 border-emerald-500 border-2 rounded-lg text-emerald-500 cursor-pointer hover:bg-emerald-500 hover:text-white transition duration-100"
+                    >
+                        Reset
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -310,6 +315,8 @@
       });
 
       app.component('multiselect', PrimeVue.MultiSelect);
+      app.component('p-checkbox', PrimeVue.Checkbox);
+
       app.mount('#app');
     </script>
 </body>
