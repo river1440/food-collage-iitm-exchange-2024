@@ -49,7 +49,7 @@
             >
                 <img
                 class="w-full h-full object-cover transition-transform duration-200 hover:scale-105"
-                :src="'photos/' + item.filename"
+                :src="'photos/'+ imageSize + '/' + item.filename"
                 :alt="item.memo"
                 />
             </div>
@@ -64,7 +64,7 @@
             <div class="bg-white rounded p-4 max-w-screen-sm w-full">
                 <img
                 class="w-full max-h-[80vh] object-contain mb-4"
-                :src="'photos/' + selectedPhoto.filename"
+                :src="'photos/large/' + selectedPhoto.filename"
                 />
                 <div class="text-center">
                     <p class="text-lg font-medium mb-2">{{ selectedPhoto.memo }}</p>
@@ -91,6 +91,11 @@
             const n = Math.ceil(Math.sqrt(filteredPhotos.value.length || 1));
             return Math.max(n, 4); // at least 4 columns
         });
+
+        const imageSize = computed(() => {
+            return columnCount.value <= 12 ? 'medium' : 'small';
+        });
+        
 
         const meals = computed(() => {
         return [...new Set(photos.value.map(p => p.meal))];
@@ -125,6 +130,7 @@
         categories,
         filteredPhotos,
         columnCount,
+        imageSize,
         showPhoto
         };
     }
