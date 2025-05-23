@@ -9,40 +9,69 @@
 </head>
 <body class="bg-gray-100 text-gray-800">
     <div id="app" class="max-w-5xl mx-auto p-4">
+        <header class="bg-gray-100 py-6 px-4 mb-4 text-center border-b-1 border-gray-300">
+            <h1 class="text-3xl font-bold mb-2 cursor-pointer hover:text-blue-600 transition"
+            @click="resetFilters"
+            >
+            Food Collage - IITM Exchange 2023 - 2024
+            </h1>
+            <p class="text-gray-700 max-w-2xl mx-auto">
+                A collage for (almost) all food I had during my exchange program from 2023 July to 2024 May in Indian Institute of Technology, Madras. (IITM)
+            </p>
+        </header>
         <!-- Filters -->
-        <div class="mb-4 flex flex-wrap gap-4">
-        <select v-model="selectedMeal" class="p-2 border rounded">
-            <option value="">All Meals</option>
-            <option v-for="m in meals" :key="m" :value="m">{{ m }}</option>
-        </select>
+        <div class="flex flex-wrap justify-between items-center gap-2 mb-4">
+            <!-- Left: Select filters -->
+            <div class="flex flex-wrap items-center gap-2">
+                <select v-model="selectedMeal" class="p-2 border rounded">
+                    <option value="">All Meals</option>
+                    <option v-for="m in meals" :key="m" :value="m">{{ m }}</option>
+                </select>
 
-        <select v-model="selectedCategory" class="p-2 border rounded">
-            <option value="">All Categories</option>
-            <option v-for="c in categories" :key="c" :value="c">{{ c }}</option>
-        </select>
+                <select v-model="selectedCategory" class="p-2 border rounded">
+                    <option value="">All Categories</option>
+                    <option v-for="c in categories" :key="c" :value="c">{{ c }}</option>
+                </select>
+
+                <select v-model="selectedWeekday" class="p-2 border rounded">
+                    <option value="">All Weekdays</option>
+                    <option v-for="w in weekdays" :key="w" :value="w">{{ w }}</option>
+                </select>
+
+                <select v-model="selectedMonth" class="p-2 border rounded">
+                    <option value="">All Month</option>
+                    <option v-for="o in months" :key="o" :value="o">{{ o }}</option>
+                </select>
+
+                <label class="ml-4 flex items-center space-x-2 text-gray-700">
+                    <input type="checkbox" v-model="onlyWithMemo" />
+                    <span>Only with memo (special event)</span>
+                </label>
+            </div>
+
+            <!-- Right: Reset Button -->
+            <button
+                @click="resetFilters"
+                class="px-4 py-2 border-gray-600 border-2 rounded-lg hover:bg-gray-600 hover:text-white transition duration-100"
+            >
+                Reset
+            </button>
         </div>
 
-        <!-- Gallery -->
-        <!-- <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-            <div
-                v-for="item in filteredPhotos"
-                :key="item.filename"
-                @click="showPhoto(item)"
-                class="cursor-pointer rounded overflow-hidden shadow hover:shadow-lg transition"
-            >
-                <img
-                class="object-cover w-full h-48"
-                :src="'photos/' + item.filename"
-                :alt="item.memo"
-                />
-            </div>
-        </div> -->
+
+        <p class="mt-2 text-sm text-gray-600 mb-4">
+            Showing {{ filteredPhotos.length }} photo<span v-if="filteredPhotos.length !== 1">s</span>
+        </p>
         <div
-        class="grid gap-0"
+        class="grid"
+        :class="[
+            gapClass
+        ]"
         :style="`grid-template-columns: repeat(${columnCount}, minmax(0, 1fr));`"
         >
             <div
                 class="aspect-square overflow-hidden cursor-pointer"
+                :class="[roundClass]"
                 v-for="item in filteredPhotos"
                 :key="item.filename"
                 @click="showPhoto(item)"
@@ -61,80 +90,160 @@
         class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
         @click.self="selectedPhoto = null"
         >
-            <div class="bg-white rounded p-4 max-w-screen-sm w-full">
+            <div class="bg-white rounded pt-12 p-6 max-w-screen-sm w-full relative">
+                  <!-- Close "X" at top-right -->
+                <button
+                    @click="selectedPhoto = null"
+                    class="absolute top-2 right-3 text-gray-400 hover:text-gray-900 text-xl font-semibold focus:outline-none cursor-pointer"
+                    aria-label="Close modal"
+                >
+                    &times;
+                </button>
                 <img
-                class="w-full max-h-[80vh] object-contain mb-4"
+                class="w-full max-h-[80vh] object-contain mb-4 rounded-xl"
                 :src="'photos/large/' + selectedPhoto.filename"
                 />
                 <div class="text-center">
                     <p class="text-lg font-medium mb-2">{{ selectedPhoto.memo }}</p>
-                    <p class="text-sm text-gray-600">{{ selectedPhoto.meal }} | {{ selectedPhoto.category }}</p>
+                    <p class="text-sm text-gray-600 mb-1">{{ selectedPhoto.meal }} | {{ selectedPhoto.category }}</p>
+                    <p class="text-xs text-gray-400">{{ formatDate(selectedPhoto.created_at) }}</p>
                 </div>
-                <div  class="text-center">
-                    <p class="text-sm text-gray-600">Photo at {{ selectedPhoto.created_at }}</p>
-                </div>
+
             </div>
-        </div>  
+        </div>
+        <footer class="bg-gray-100 text-center text-sm text-gray-600 py-4 mt-8">
+            <p>Contact: river1440@gmail.com | 
+                <a href="https://github.com/river1440/food-collage-iitm-exchange-2024" class="text-blue-500 hover:underline" target="_blank">
+                GitHub Repo
+                </a>
+            </p>
+            <p class="mt-1">&copy; 2025 river1440. All rights reserved.</p>
+        </footer>
     </div>
+</body>
+<script type="module">
+import { createApp, ref, computed, onMounted } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
 
-    <script type="module">
-    import { createApp, ref, computed, onMounted } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+createApp({
+setup() {
+    const photos = ref([]);
 
-    createApp({
-    setup() {
-        const photos = ref([]);
-        const selectedMeal = ref("");
-        const selectedCategory = ref("");
-        const selectedPhoto = ref(null);
+    // Filter
+    const selectedMeal = ref("");
+    const selectedCategory = ref("");
+    const selectedWeekday = ref("");
+    const selectedMonth = ref("");
+    const onlyWithMemo = ref(false);
 
-        const columnCount = computed(() => {
-            const n = Math.ceil(Math.sqrt(filteredPhotos.value.length || 1));
-            return Math.max(n, 4); // at least 4 columns
-        });
+    // Modal
+    const selectedPhoto = ref(null);    
 
-        const imageSize = computed(() => {
-            return columnCount.value <= 12 ? 'medium' : 'small';
-        });
-        
+    const meals = computed(() => {
+    return [...new Set(photos.value.map(p => p.meal))];
+    });
 
-        const meals = computed(() => {
-        return [...new Set(photos.value.map(p => p.meal))];
-        });
+    const categories = computed(() => {
+    return [...new Set(photos.value.map(p => p.category))];
+    });
 
-        const categories = computed(() => {
-        return [...new Set(photos.value.map(p => p.category))];
-        });
+    const weekdays = computed(() => {
+    return [...new Set(photos.value.map(p => p.weekday))];
+    });
 
-        const filteredPhotos = computed(() => {
+    const months = computed(() => {
+    return [...new Set(photos.value.map(p => p.month))];
+    });
+
+    const filteredPhotos = computed(() => {
         return photos.value.filter(p => {
-            return (!selectedMeal.value || p.meal === selectedMeal.value) &&
-                (!selectedCategory.value || p.category === selectedCategory.value);
+            const mealMatch = !selectedMeal.value || p.meal === selectedMeal.value;
+            const categoryMatch = !selectedCategory.value || p.category === selectedCategory.value
+            const weekdayMatch = !selectedWeekday.value || p.weekday === selectedWeekday.value
+            const monthMatch = !selectedMonth.value || p.month === selectedMonth.value
+            const memoMatch = !onlyWithMemo.value || (p.memo && p.memo.trim() !== "")
+            
+            return mealMatch && categoryMatch && weekdayMatch && monthMatch && memoMatch;
         });
-        });
+    });
 
-        const showPhoto = (photo) => {
-        selectedPhoto.value = photo;
-        };
+    // Layout
+    const columnCount = computed(() => {
+        const n = Math.ceil(Math.sqrt(filteredPhotos.value.length || 1));
+        return Math.max(n, 4); // at least 4 columns
+    });
 
-        onMounted(async () => {
-        const res = await fetch('photo_metadata.json');
-        photos.value = await res.json();
-        });
+    // Less gap when more columns
+    const gapClass = computed(() => {
+        if (columnCount.value <= 8) return 'gap-4';
+        if (columnCount.value <= 16) return 'gap-2';
+        return 'gap-1';
+    });
 
-        return {
+    const roundClass = computed(() => {
+        if (columnCount.value <= 8) return 'rounded-2xl';
+        if (columnCount.value <= 16) return 'rounded-lg';
+        return 'rounded-md';
+    });
+
+    const imageSize = computed(() => {
+        return columnCount.value <= 12 ? 'medium' : 'small';
+    });
+
+    const showPhoto = (photo) => {
+    selectedPhoto.value = photo;
+    };
+
+    const resetFilters = () => {
+        selectedMeal.value = '';
+        selectedCategory.value = '';
+        selectedWeekday.value = '';
+        selectedMonth.value = '';
+        onlyWithMemo.value = false;
+    };
+
+    function formatDate(timestamp) {
+        const options = {
+            weekday: "short",
+            year: "numeric",
+            month: "short",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false
+        }
+        return new Date(timestamp).toLocaleDateString("en-US", options).replace(/,/g, '');
+    }
+
+    onMounted(async () => {
+    const res = await fetch('photo_metadata.json');
+    photos.value = await res.json();
+    });
+
+
+
+    return {
         photos,
+        onlyWithMemo,
         selectedMeal,
         selectedCategory,
+        selectedWeekday,
+        selectedMonth,
         selectedPhoto,
         meals,
         categories,
+        weekdays,
+        months,
         filteredPhotos,
         columnCount,
+        gapClass,
+        roundClass,
         imageSize,
-        showPhoto
-        };
-    }
-    }).mount('#app');
-    </script>
-</body>
+        showPhoto,
+        resetFilters,
+        formatDate,
+    };
+}
+}).mount('#app');
+</script>
 </html>
