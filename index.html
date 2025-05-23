@@ -99,19 +99,19 @@
                 >
                     &times;
                 </button>
-                <div class="relative">
-  <!-- Low-quality image as fallback or blur -->
-                <img
-                    :src="'photos/small/' + selectedPhoto.filename"
-                    class="absolute w-full max-h-[80vh] object-contain mb-4 rounded-xl blur-sm"
-                />
-                <!-- High-quality image loaded lazily -->
-                <img
-                    :src="'photos/large/' + selectedPhoto.filename"
-                    class="relative w-full max-h-[80vh] object-contain mb-4 rounded-xl transition-opacity duration-300"
-                    @load="highResLoaded = true"
-                    :class="{ 'opacity-0': !highResLoaded, 'opacity-100': highResLoaded }"
-                />
+                <div class="relative aspect-[4/3] w-full max-h-[80vh]">
+                    <!-- Low-quality image as fallback or blur -->
+                    <img
+                        :src="'photos/small/' + selectedPhoto.filename"
+                        class="absolute w-full h-full object-contain mb-4 rounded-xl blur-sm"
+                    />
+                    <!-- High-quality image loaded lazily -->
+                    <img
+                        :src="'photos/large/' + selectedPhoto.filename"
+                        class="relative w-full h-full object-contain mb-4 rounded-xl transition-opacity duration-300"
+                        @load="highResLoaded = true"
+                        :class="{ 'opacity-0': !highResLoaded, 'opacity-100': highResLoaded }"
+                    />
                 </div>
                 <div class="text-center">
                     <p class="text-lg font-medium mb-2">{{ selectedPhoto.memo }}</p>
