@@ -38,43 +38,43 @@
         <div class="flex flex-wrap justify-between items-center gap-2 mb-4">
             <!-- Left: Select filters -->
             <div class="flex flex-col gap-4 w-full">
-                <div class="flex items-center gap-2">
-                    <label class="min-w-[120px] font-semibold" for="meals">Meals</label>
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2 w-full">
+                    <label class="font-semibold sm:w-[120px]" for="meals">Meals</label>
                     <multiselect
                         id="meals"
                         v-model="selectedMeals"
                         :options="meals"
                         filter
                         placeholder="Select meals"
-                        class="w-full"/>
+                        class="w-full sm:flex-1"/>
                 </div>
 
-                <div class="flex items-center gap-2">
-                    <label class="min-w-[120px] font-semibold" for="categories">Categories</label>
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2 w-full">
+                    <label class="font-semibold sm:w-[120px]" for="categories">Categories</label>
                     <multiselect
                         id="categories"
                         v-model="selectedCategories"
                         :options="categories"
                         filter
                         placeholder="Select categories"
-                        class="w-full"
+                        class="w-full sm:flex-1 min-w-0"
                     />
                 </div>
 
-                <div class="flex items-center gap-2">
-                    <label class="min-w-[120px] font-semibold" for="weekdays">Weekdays</label>
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2 w-full">
+                    <label class="font-semibold sm:w-[120px]" for="weekdays">Weekdays</label>
                     <multiselect
                         id="weekdays"
                         v-model="selectedWeekdays"
                         :options="weekdays"
                         filter
                         placeholder="Select weekdays"
-                        class="w-full"
+                        class="w-full sm:flex-1"
                     />
                 </div>
 
-                <div class="flex items-center gap-2">
-                    <label class="min-w-[120px] font-semibold" for="months">Months</label>
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2 w-full">
+                    <label class="font-semibold sm:w-[120px]" for="months">Months</label>
                     <multiselect
                         id="months"
                         v-model="selectedMonths"
@@ -82,7 +82,7 @@
                         optionLabel="name"
                         filter
                         placeholder="Select months"
-                        class="w-full"
+                        class="w-full sm:flex-1 min-w-0"
                     />
                 </div>
 
